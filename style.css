@@ -1,0 +1,101 @@
+* {
+    text-align: center;
+}
+body {
+    background-image: url('desert.webp');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+    
+}
+.wrapper{
+    
+}
+ 
+.divh{
+    margin-right: 15px;
+}
+#canvas{
+    background-color: aqua;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+#speeds{
+    margin: 15px;
+}
+#speed_low{
+    background-color: rgb(2, 255, 2);
+    width: 90px;   
+    height: 40px;
+}
+#speed_low:focus{
+    background-color: aqua;
+}
+#speed_mid{
+    background-color: rgb(2, 255, 2);
+    width: 90px;   
+    height: 40px;
+}
+#speed_mid:focus{
+    background-color: aqua;
+}
+#speed_high{
+    background-color: rgb(2, 255, 2);
+    width: 90px;   
+    height: 40px;
+}
+#speed_high:focus{
+    background-color: aqua;
+}
+#Start{
+      background-color: rgb(2, 255, 2);
+      width: 90px;   
+      height: 40px; 
+}
+
+#up{
+    background-color: rgb(2, 255, 2);
+    width: 90px;   
+    height: 40px; 
+} 
+
+
+#center{
+    width: 90px;   
+    height: 40px;
+    background-color: rgb(0, 0, 0);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    opacity: 0;
+}
+
+#left{
+    background-color: rgb(2, 255, 2);
+    width: 90px;   
+    height: 40px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#right{
+    background-color: rgb(2, 255, 2);
+    width: 90px;   
+    height: 40px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#down{
+    background-color: rgb(2, 255, 2);
+    width: 90px;   
+    height: 40px;
+}
+.header{
+    display: flex;
+    justify-content: center;
+}
+.translate{
+    background: transparent;
+    border: none;
+    margin-left: 10px;
+}

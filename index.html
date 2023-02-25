@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title class="title">Game snake!</title>
+</head>
+<body>
+    <div class="wrapper" >
+        <div class="header">
+            <div class="divh">
+                <img src="./en-flag.png" alt="en-flag" width="50px" height="30px" id="flag">
+            </div>
+            <select class="change-lang" id="fang">
+                <option value="en" id="EN">en</option>
+                <option value="ua" selected id="UA">ua</option>
+            </select>   
+        </div>
+        <div id="speeds">
+            <h1 class="lang-speed" >Вибір швидкості</h1>
+            <button id="speed_low" class="lang-low" onclick="clickHandler(500)">повільно</button>
+            <button id="speed_mid" class="lang-middle" onclick="clickHandler(200)">нормально</button>
+            <button id="speed_high" class="lang-high" onclick="clickHandler(100)">швидко</button>
+        </div>
+        <div><button id="Start" class="lang-start" onclick="myFunction()">Почати</button></div>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <div><button id="up" class="lang-up" onclick="snake.setDirection('up')">Вверх</button></div>
+        <div id="buttons">      
+            <button id="left" class="lang-left" onclick="snake.setDirection('left')" >Вліво</button>
+            <button id="center">0988ggyg</button>
+            <button id="right" class="lang-right" onclick="snake.setDirection('right')">Вправо</button>
+        </div>
+        <div><button id="down" class="lang-down" onclick="snake.setDirection('down')">Вниз</button></div>
+        
+        <script>
+            var selectTag = document.getElementById('fang')
+            var flag = document.getElementById('flag')
+            function changeOptionOne() {
+                flag.src = "./en-flag.png"
+            }
+            function changeOptionTwo() {
+                flag.src = "./ua-flag.png"
+            }
+            function changeOptionThree() {
+                if(selectTag.value === "en") {
+                    changeOptionOne()
+                } else{
+                    changeOptionTwo()
+                }
+            }
+
+            const fff =(a)=>{
+                if(a === "en") {
+                    changeOptionOne()
+                }
+                if(a === "ua") {
+                    changeOptionTwo()
+                }
+            }
+            var langObj = {
+                "title" : {
+                    "en": "Game snake!",
+                    "ua": "Гра змійка!", 
+                },
+                "speed" : {
+                    "en": "Speed selection",
+                    "ua": "Вибір швидкості",
+                },
+                "low" : {
+                    "en": "slow",
+                    "ua": "повільно",
+                },
+                "middle" : {
+                    "en": "normally",
+                    "ua" : "нормально",
+                },
+                "high" : {
+                    "en": "quickly",
+                    "ua": "швидко",
+                },
+                "start" : {
+                    "en": "Start",
+                    "ua": "Почати",
+                },
+                "up" : {
+                    "en": "Up",
+                    "ua": "Вверх",
+                },
+                "left" : {
+                    "en": "Left",
+                    "ua": "Вліво",
+                },
+                "right" : {
+                    "en": "Right",
+                    "ua": "Вправо",
+                },
+                "down" : {
+                    "en": "Down",
+                    "ua": "Вниз",
+                },
+            }
+            const select = document.querySelector('select')
+            const allLang = ['en','ua']
+
+            select.addEventListener('change', changeURLLanguage)
+            function changeURLLanguage () {
+                let lang = select.value
+                location.href = window.location.pathname + '#'+lang
+                
+                location.reload()
+            }
+            function changeLanguage() {
+                let hash = window.location.hash          
+                hash = hash.substr(1)
+
+                fff(hash)
+              
+                if(!allLang.includes(hash)){
+                    location.href = window.location.pathname +'#en'
+                    location.reload()
+                }
+                select.value = hash
+                document.querySelector('title').innerHTML = langObj['title'][hash]
+                document.querySelector('.lang-start').innerHTML = langObj['start'][hash]
+                document.querySelector('.lang-speed').innerHTML = langObj['speed'][hash]
+                document.querySelector('.lang-low').innerHTML = langObj['low'][hash]
+                document.querySelector('.lang-middle').innerHTML = langObj['middle'][hash]
+                document.querySelector('.lang-high').innerHTML = langObj['high'][hash]
+                document.querySelector('.lang-up').innerHTML = langObj['up'][hash]
+                document.querySelector('.lang-left').innerHTML = langObj['left'][hash]
+                document.querySelector('.lang-right').innerHTML = langObj['right'][hash]
+                document.querySelector('.lang-down').innerHTML = langObj['down'][hash]
+            }
+            changeLanguage()
+            //---------------------------------------------------------------------------------------
+           function clickHandler(params) {
+            console.log('#',params)
+            console.log('^',speed)
+            speed = params
+            console.log('%',speed)
+           }
+            var speed = 1000
+            var canvas = document.getElementById("canvas")
+            var ctx = canvas.getContext("2d")
+            var width = canvas.width
+            var height = canvas.height 
+            var speed_high = document.getElementById("speed_high")
+            var speed_low = document.getElementById("speed_low")
+            var speed_mid = document.getElementById("speed_mid")
+            var blockSize = 10
+            var widthInBlock = width / blockSize
+            var heightInBlock = height / blockSize
+            var score = 0
+            var drawBorder = function () {
+                ctx.fillStyle = "Black"
+                ctx.fillRect(0, 0, width, blockSize)
+                ctx.fillRect(0, height-blockSize, width, blockSize)
+                ctx.fillRect(0, 0, blockSize, height)
+                ctx.fillRect(width-blockSize, 0, blockSize, height)
+            }
+            var drawScore = function () {
+                ctx.font = "20px Courier"
+                ctx.fillStyle = "Black"
+                ctx.textAlign = "left"
+                ctx.textBaseline = "top"
+                ctx.fillText = ("Рахунок: "+score, blockSize, blockSize)
+            }
+            var gameOver = function () {
+                clearInterval(intervalId)
+                ctx.font = "60px Courier"
+                ctx.fillStyle = "Black"
+                ctx.textAlign = "center"
+                ctx.textBaseline = "middle"
+                ctx.fillText = ("Кінець гри", width/2, height/2)
+                location.reload()
+            }
+            var circle = function (x,y,radius,fillCircle) {
+                ctx.beginPath()
+                ctx.arc(x,y,radius,0,Math.PI*2,false)
+                if (fillCircle) {
+                    ctx.fill() 
+                } else {
+                    ctx.stroke()
+                }
+            }
+            var Block = function (col, row) {
+                this.col=col
+                this.row=row
+            }
+            Block.prototype.drawSquare = function (color) {
+                var x = this.col * blockSize
+                var y = this.row * blockSize
+                ctx.fillStyle = color
+                ctx.fillRect(x,y,blockSize,blockSize)
+            }
+            Block.prototype.drawCircle = function (color) {
+                var centerX = this.col * blockSize + blockSize/2
+                var centerY = this.row * blockSize + blockSize/2
+                ctx.fillStyle = color
+                circle(centerX,centerY,blockSize/2,true)
+            }
+            Block.prototype.equal = function (otherBlock) {
+                return this.col === otherBlock.col && this.row === otherBlock.row
+            }
+            var Snake = function () {
+                this.segments = [
+                    new Block(7,5),
+                    new Block(6,5),
+                    new Block(5,5)
+                ]
+                this.direction = "right"
+                this.nextDirection = "right"
+            }
+            Snake.prototype.draw = function () {
+                for (var i=0; i< this.segments.length; i++) {
+                    this.segments[i].drawSquare("Green")
+                }
+            }
+            Snake.prototype.move = function () {
+                var head = this.segments[0]
+                var newHead
+                this.direction = this.nextDirection
+                if (this.direction==="right") {
+                    newHead = new Block(head.col+1, head.row)
+                } else if (this.direction==="down") {
+                    newHead = new Block(head.col, head.row+1)
+                } else if (this.direction==="left") {
+                    newHead = new Block(head.col-1, head.row)
+                } else if (this.direction==="up") {
+                    newHead = new Block(head.col, head.row-1)
+                }
+                if (this.checkCollision(newHead)) {
+                    gameOver()
+                    return
+                }
+                this.segments.unshift(newHead)
+                if(newHead.equal(apple.position)) {
+                    score++
+                    apple.move()
+                } else {
+                    this.segments.pop()
+                }    
+            }
+            Snake.prototype.checkCollision = function (head) {
+                var leftCollision = (head.col === 0)
+                var topCollision = (head.row === 0)
+                var rightCollision = (head.col === widthInBlock-1)
+                var bottomCollision = (head.row === heightInBlock-1)
+                var wallCollision = leftCollision || topCollision || rightCollision ||bottomCollision
+                var selfCollision = false
+                for (var i = 0; i<this.segments.length; i++) {
+                    if(head.equal(this.segments[i])) {
+                        selfCollision = true
+                    }
+                }
+                return wallCollision || selfCollision
+            }
+            Snake.prototype.setDirection = function (newDirection) {
+                if (this.direction === "up" && newDirection === "down") {
+                    return 
+                } else if (this.direction === "right" && newDirection === "left") {
+                    return 
+                } else if (this.direction === "down" && newDirection === "up") {
+                    return 
+                } else if (this.direction === "left" && newDirection === "right") {
+                    return 
+                }
+                this.nextDirection = newDirection
+            }
+            var Apple = function () {
+                this.position = new Block (10,10)
+            }
+            Apple.prototype.draw = function () {
+                this.position.drawCircle("Black")
+            }
+            Apple.prototype.move = function () {
+                var randomCol = Math.floor(Math.random()*(widthInBlock-2))+1
+                var randomRow = Math.floor(Math.random()*(heightInBlock-2))+1
+                this.position = new Block(randomCol,randomRow)
+            }
+            var snake = new Snake()
+            var apple = new Apple()
+            var intervalId
+            // var intervalId = setInterval(function () {
+            //     ctx.clearRect(0,0,width,height)
+            //     drawScore()
+            //     snake.move()
+            //     snake.draw()
+            //     apple.draw()
+            //     drawBorder()
+            // },speed)
+            function myFunction() { 
+                intervalId = setInterval(function () {
+                ctx.clearRect(0,0,width,height)
+                drawScore()
+                snake.move()
+                snake.draw()
+                apple.draw()
+                drawBorder()
+                },speed)
+            }
+            // var speeds = function speeds() {
+            //     if(onclick === speed_low){
+            //         speed = 1000
+            //     } else if(onclick === speed_mid){
+            //         speed = 100
+            //     } else if(onclick === speed_high){
+            //         speed = 50
+            //     }
+            // }
+            
+            // var directions = {
+            //     // 37: "left",
+            //     // 38: "up",
+            //     // 39: "right",
+            //     // 40: "down"
+    
+            // }
+            
+    
+            // document.addEventListener('keydown', function(e) {
+            //     var newDirection = directions[event.keyCode]
+            //     if(newDirection !== undefined) {
+            //         snake.setDirection(newDirection)
+            //     }                        
+            // }); 
+
+        
+        </script>  
+    </div>
+    
+</body>
+</html>
